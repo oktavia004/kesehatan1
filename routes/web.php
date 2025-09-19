@@ -35,8 +35,10 @@ Route::post('/register', [RegisterController::class, 'store'])->name('register.s
 */
 Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function () {
     Route::get('/dashboard', [ProductsController::class, 'dashboard'])->name('dashboard');
-    Route::resource('products', \App\Http\Controllers\Admin\ProductsController::class);
+    Route::resource('products', ProductsController::class);
 });
+
+
 
 Route::get('/dashboard', [ProductController::class, 'index'])->name('dashboard');
 

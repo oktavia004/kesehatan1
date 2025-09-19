@@ -1,3 +1,7 @@
+@php
+use Illuminate\Support\Str;
+@endphp
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,8 +30,18 @@
             @foreach($products as $product)
               <div class="col product-card" data-category="{{ $product->category->category_name }}">
                 <div class="card h-100 text-center shadow-sm">
-                  <!-- Foto produk -->
-                  <img src="{{ asset($product->image_url ?? 'img/no-image.png') }}" class="card-img-top">
+                  
+                   @if($product->image_url)
+                      @if(Str::startsWith($product->image_url, 'img/'))
+                          {{-- Data dari seeder, ambil dari public/img --}}
+                          <img src="{{ asset($product->image_url) }}" alt="{{ $product->product_name }}" class="img-fluid p-2" style="max-height:150px;">
+                      @else
+                          {{-- Data upload admin, ambil dari storage --}}
+                          <img src="{{ asset('storage/' . $product->image_url) }}" alt="{{ $product->product_name }}" class="img-fluid p-2" style="max-height:150px;">
+                      @endif
+                  @else
+                      <span class="text-muted">No Image</span>
+                  @endif
                   <div class="card-body">
                     <h5 class="card-title">{{ $product->product_name }}</h5>
                     <p class="text-muted mb-0">{{ $product->category->category_name }}</p>
@@ -35,7 +49,7 @@
                   <div class="card-footer">
                     <div class="btn-group">
                       <!-- Tombol View -->
-                      <button class="btn btn-outline-primary btn-sm view-btn"
+                      <button class="btn btn-outline-primary btn-sm view-btn w-50"
                         data-bs-toggle="modal"
                         data-bs-target="#productModal"
                         data-name="{{ $product->product_name }}"
@@ -43,7 +57,7 @@
                         data-desc="{{ $product->description ?? 'Tidak ada deskripsi.' }}"
                         data-price="{{ $product->price }}"
                         data-stock="{{ $product->stock ?? 0 }}"
-                        data-image="{{ asset($product->image_url ?? 'img/no-image.png') }}">
+                        data-image="{{ $product->image_url ? (Str::startsWith($product->image_url, 'img/') ? asset($product->image_url) : asset('storage/' . $product->image_url)) : asset('img/no-image.png') }}">
                         View
                       </button>
 

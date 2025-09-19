@@ -12,6 +12,7 @@ class Product extends Model
     protected $table = 'products'; // nama tabel
 
     protected $primaryKey = 'product_id'; // primary key di tabel
+    public $timestamps = false;
 
     public function getRouteKeyName()
     {

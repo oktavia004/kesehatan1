@@ -18,8 +18,8 @@
                             <div class="card text-center">
                                 <div class="card-body">
                                     <h5 class="card-title">Total Products</h5>
-                                    <p class="card-text display-4">{{ $products->total() }}</p>
-                                    <!-- <a href="{{ route('vendor.product.index') }}" class="btn btn-primary">Manage Products</a> -->
+                                    <p class="card-text display-4">{{ $products->count() }}</p>
+                                    <a href="{{ route('admin.products.index') }}" class="btn btn-primary">Manage Products</a>
                                 </div>
                             </div>
                         </div>
@@ -27,7 +27,7 @@
                             <div class="card text-center">
                                 <div class="card-body">
                                     <h5 class="card-title">Total Stock</h5>
-                                    <p class="card-text display-4">{{ $products->sum('quantity') }}</p>
+                                    <p class="card-text display-4">{{ $products->sum('stock') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -35,7 +35,7 @@
                             <div class="card text-center">
                                 <div class="card-body">
                                     <h5 class="card-title">Add New Product</h5>
-                                    <a href="{{ route('vendor.product.create') }}" class="btn btn-success btn-lg">Create Product</a>
+                                    <a href="{{ route('admin.products.create') }}" class="btn btn-success btn-lg">Create Product</a>
                                 </div>
                             </div>
                         </div>
@@ -58,23 +58,23 @@
                                     <tbody>
                                         @foreach($products->take(5) as $product)
                                             <tr>
-                                                <td>{{ $product->name }}</td>
-                                                <td>{{ $product->category->name }}</td>
+                                                <td>{{ $product->product_name }}</td>
+                                                <td>{{ $product->category->category_name }}</td>
                                                 <td>Rp {{ number_format($product->price, 0, ',', '.') }}</td>
-                                                <td>{{ $product->quantity }}</td>
+                                                <td>{{ $product->stock }}</td>
                                                 <td>
-<a href="{{ route('vendor.product.edit', $product->product_id) }}" class="btn btn-sm btn-warning">Edit</a>
+<a href="{{ route('admin.products.edit', $product->product_id) }}" class="btn btn-sm btn-warning">Edit</a>
                                                 </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
                             </div>
-                            <a href="{{ route('vendor.product.index') }}" class="btn btn-secondary">View All Products</a>
+                            <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">View All Products</a>
                         @else
                             <div class="text-center py-5">
                                 <p class="text-muted">You haven't added any products yet.</p>
-                                <a href="{{ route('vendor.product.create') }}" class="btn btn-primary">Add Your First Product</a>
+                                <a href="{{ route('admin.products.create') }}" class="btn btn-primary">Add Your First Product</a>
                             </div>
                         @endif
                     </div>
