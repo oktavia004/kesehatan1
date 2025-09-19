@@ -15,7 +15,6 @@
       border-radius: 8px;
       box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
     }
-    
     .title-box {
       text-align: center;
       margin-bottom: 20px;
@@ -27,6 +26,7 @@
       border-radius: 5px;
       background-color: #f1f1f1;
       margin: 0;
+      font-size: 16px;
     }
     table {
       width: 100%;
@@ -43,9 +43,6 @@
     td {
       padding: 10px;
       text-align: center;
-    }
-    .title-box h2 {
-      font-size: 16px;
     }
     .total {
       text-align: left;
@@ -74,10 +71,18 @@
       background-color: #0d6efd;
       color: #fff;
     }
+    .btn-cancel {
+  background-color: #f25609; /* orange */
+  color: #fff; /* ganti jadi putih biar kontras */
+}
+.btn-cancel:hover {
+  background-color: #ed3705; /* sedikit lebih gelap saat hover */
+  color: #fff; /* tetap putih */
+}
+
   </style>
 </head>
 <body class="bg-light">
-
 
 @extends('layouts.app')
 
@@ -89,7 +94,6 @@
     <div class="title-box">
       <h2>Keranjang Belanja</h2>
     </div>
-
 
     <table>
       <thead>
@@ -124,21 +128,19 @@
       </tbody>
     </table>
 
-
     <div class="total">
       Total belanja (termasuk pajak):
       <span class="highlight">Rp. {{ number_format($total, 0, ',', '.') }}</span>
     </div>
 
-
+    <!-- Tombol aksi -->
     <div style="margin-top: 20px; text-align: right;">
+      <a href="{{ route('dashboard') }}" class="btn btn-cancel">Cancel</a>
       <a href="{{ url('/checkout') }}" class="btn btn-primary">Checkout</a>
     </div>
   </div>
 </div>
 @endsection
-
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -29,27 +29,49 @@ class CartController extends Controller
     }
 
     /**
-     * Tambahkan produk ke keranjang
+     * Tambahkan produk ke keranjang dengan validasi stok
      */
     public function add(Request $request, $productId)
     {
-      
         $userId = Session::get('user_id');
-
         $product = Product::findOrFail($productId);
+        $quantityToAdd = $request->input('quantity', 1);
+
+        // ✅ Cek stok produk sebelum ditambahkan
+        if ($product->stock < $quantityToAdd) {
+            return $request->ajax()
+                ? response()->json([
+                    'success' => false,
+                    'message' => "Stok produk hanya tersisa {$product->stock}, tidak bisa menambah {$quantityToAdd} item."
+                ], 400)
+                : back()->with('error', "Stok produk hanya tersisa {$product->stock}");
+        }
 
         $cartItem = Cart::where('user_id', $userId)
             ->where('product_id', $productId)
             ->first();
 
+        $existingQty = $cartItem ? $cartItem->quantity : 0;
+
+        // ✅ Pastikan total tidak melebihi stok
+        if ($existingQty + $quantityToAdd > $product->stock) {
+            return $request->ajax()
+                ? response()->json([
+                    'success' => false,
+                    'message' => "Jumlah di keranjang melebihi stok. Maksimal hanya {$product->stock} item."
+                ], 400)
+                : back()->with('error', "Jumlah di keranjang melebihi stok (maksimal {$product->stock}).");
+        }
+
+        // ✅ Tambahkan ke keranjang
         if ($cartItem) {
-            $cartItem->quantity += 1;
+            $cartItem->quantity += $quantityToAdd;
             $cartItem->save();
         } else {
             Cart::create([
                 'user_id'    => $userId,
                 'product_id' => $productId,
-                'quantity'   => 1,
+                'quantity'   => $quantityToAdd,
             ]);
         }
 
@@ -59,6 +81,7 @@ class CartController extends Controller
             return response()->json([
                 'success'   => true,
                 'cartCount' => $cartCount,
+                'message'   => "Produk berhasil ditambahkan ke keranjang."
             ]);
         }
 

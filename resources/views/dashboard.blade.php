@@ -149,26 +149,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ✅ Ajax update cart count
-  const cartCount = document.getElementById('cart-count');
-  document.querySelectorAll('.add-to-cart-form').forEach(form => {
+  {{-- Script AJAX Add to Cart --}}
+
+document.querySelectorAll('.add-to-cart-form').forEach(form => {
     form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      fetch(this.action, {
-        method: "POST",
-        body: new FormData(this),
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          cartCount.textContent = data.cartCount;
-          cartCount.style.display = 'inline-block';
-        }
-      })
-      .catch(err => console.error(err));
+        e.preventDefault();
+        fetch(this.action, {
+            method: "POST",
+            body: new FormData(this),
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(async res => {
+            const data = await res.json();
+
+            if (!res.ok) {
+                alert(data.message); // ✅ tampilkan warning kalau stok kurang
+                return;
+            }
+
+            // ✅ update cart count kalau sukses
+            if (data.success) {
+                document.getElementById('cart-count').textContent = data.cartCount;
+                document.getElementById('cart-count').style.display = 'inline-block';
+            }
+        })
+        .catch(err => console.error(err));
     });
-  });
+});
 
   // ✅ Filter produk berdasarkan kategori
   const categoryItems = document.querySelectorAll('.category-item');

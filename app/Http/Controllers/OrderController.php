@@ -61,11 +61,14 @@ class OrderController extends Controller
         return view('invoice', compact('order'));
     }
 
-    // Download PDF
     public function downloadPdf($orderId)
-    {
-        $order = Order::with('items.product', 'user')->findOrFail($orderId);
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('invoice', compact('order'));
-        return $pdf->download('invoice_'.$order->order_id.'.pdf');
-    }
+{
+    $order = Order::with('items.product', 'user')->findOrFail($orderId);
+
+    // render dari pdf.blade.php
+    $pdf = Pdf::loadView('pdf', compact('order'));  
+
+    return $pdf->download('invoice_'.$order->order_id.'.pdf');
+}
+
 }

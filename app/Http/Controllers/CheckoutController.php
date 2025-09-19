@@ -52,6 +52,14 @@ class CheckoutController extends Controller
                 abort(400, 'Keranjang kosong');
             }
 
+            // ✅ Cek stok sebelum buat order
+            foreach ($cartItems as $item) {
+                if ($item->quantity > $item->product->stock) {
+                    // Batalkan transaksi kalau stok tidak cukup
+                    abort(400, "Produk {$item->product->product_name} stoknya kurang. Maksimal hanya {$item->product->stock} item.");
+                }
+            }
+
             $total = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
 
             // Simpan order
@@ -63,7 +71,7 @@ class CheckoutController extends Controller
                 'bank_name'      => $request->bank_name,
             ]);
 
-            // Simpan order items
+            // Simpan order items & kurangi stok
             foreach ($cartItems as $item) {
                 OrderItem::create([
                     'order_id'   => $order->order_id,
@@ -71,6 +79,9 @@ class CheckoutController extends Controller
                     'quantity'   => $item->quantity,
                     'price'      => $item->product->price,
                 ]);
+
+                // ✅ Kurangi stok produk
+                $item->product->decrement('stock', $item->quantity);
             }
 
             // Kosongkan cart
@@ -80,7 +91,8 @@ class CheckoutController extends Controller
         });
 
         // Redirect ke halaman invoice dengan order id
-        return redirect()->route('invoice.show', $order->order_id);
+        return redirect()->route('invoice.show', $order->order_id)
+            ->with('success', 'Checkout berhasil! Silakan lihat invoice Anda.');
     }
 
     /**

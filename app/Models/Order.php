@@ -11,7 +11,9 @@ class Order extends Model
     protected $fillable = [
         'user_id', 'total_amount', 'payment_method', 'paypal_id', 'bank_name'
     ];
-
+    protected $casts = [
+        'order_date' => 'datetime',
+    ];
     public function items()
     {
         return $this->hasMany(OrderItem::class, 'order_id');
