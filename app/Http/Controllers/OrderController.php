@@ -8,6 +8,8 @@ use App\Models\Cart;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\InvoiceMail;
 
 class OrderController extends Controller
 {
@@ -65,10 +67,16 @@ class OrderController extends Controller
 {
     $order = Order::with('items.product', 'user')->findOrFail($orderId);
 
-    // render dari pdf.blade.php
-    $pdf = Pdf::loadView('pdf', compact('order'));  
+    // Render dari pdf.blade.php
+    $pdf = Pdf::loadView('pdf', compact('order'));
 
-    return $pdf->download('invoice_'.$order->order_id.'.pdf');
+    // Kirim email dengan attachment PDF
+    Mail::to($order->user->email)->send(new InvoiceMail($pdf, $order));
+
+    // Download file PDF
+    return $pdf->download('invoice_'.$order->id.'.pdf');
+
+    
 }
 
 }

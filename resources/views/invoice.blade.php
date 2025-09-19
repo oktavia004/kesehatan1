@@ -6,9 +6,9 @@
 <div class="invoice-wrapper border p-4 shadow-lg bg-white rounded">
 
     <!-- Tombol Download PDF -->
-    <a href="{{ route('invoice.pdf', $order->order_id) }}" class="btn btn-primary btn-sm float-end" target="_blank">
-        Download PDF
-    </a>
+    <a href="{{ route('invoice.pdf', $order->order_id) }}" class="btn btn-primary btn-sm float-end">
+    Download PDF & Kirim Email
+</a>
 
     <!-- Judul -->
     <h3 class="text-center mb-4">Toko Alat Kesehatan</h3>

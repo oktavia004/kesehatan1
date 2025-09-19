@@ -1,12 +1,3 @@
-<x-mail::message>
-# Introduction
-
-The body of your message.
-
-<x-mail::button :url="''">
-Button Text
-</x-mail::button>
-
-Thanks,<br>
-{{ config('app.name') }}
-</x-mail::message>
+<p>Halo {{ $order->user->username }},</p>
+<p>Terima kasih telah berbelanja di Toko Alat Kesehatan. Invoice Anda terlampir.</p>
+<p>Salam,<br>Toko Alat Kesehatan</p>

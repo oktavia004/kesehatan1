@@ -72,12 +72,19 @@
       color: #fff;
     }
     .btn-cancel {
-  background-color: #f25609; /* orange */
-  color: #fff; /* ganti jadi putih biar kontras */
+  background-color: #ff7f32; /* oranye terang */
+  color: #fff;               /* teks putih biar kontras */
+  border: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 .btn-cancel:hover {
-  background-color: #ed3705; /* sedikit lebih gelap saat hover */
-  color: #fff; /* tetap putih */
+  background-color: #e86a1d; /* oranye lebih gelap pas hover */
+  color: #fff;
+  transform: scale(1.05);    /* sedikit membesar saat hover */
+}
+.btn-cancel:active {
+  background-color: #cc580f; /* lebih gelap saat ditekan */
+  transform: scale(0.98);
 }
 
   </style>

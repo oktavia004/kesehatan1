@@ -8,6 +8,9 @@ use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\InvoiceMail;
 
 class CheckoutController extends Controller
 {
@@ -102,5 +105,6 @@ class CheckoutController extends Controller
     {
         $order = Order::with('items.product', 'user')->findOrFail($orderId);
         return view('invoice', compact('order'));
+
     }
 }
