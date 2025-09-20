@@ -72,21 +72,20 @@
       color: #fff;
     }
     .btn-cancel {
-  background-color: #ff7f32; /* oranye terang */
-  color: #fff;               /* teks putih biar kontras */
-  border: none;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-.btn-cancel:hover {
-  background-color: #e86a1d; /* oranye lebih gelap pas hover */
-  color: #fff;
-  transform: scale(1.05);    /* sedikit membesar saat hover */
-}
-.btn-cancel:active {
-  background-color: #cc580f; /* lebih gelap saat ditekan */
-  transform: scale(0.98);
-}
-
+      background-color: #ff7f32;
+      color: #fff;
+      border: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .btn-cancel:hover {
+      background-color: #e86a1d;
+      color: #fff;
+      transform: scale(1.05);
+    }
+    .btn-cancel:active {
+      background-color: #cc580f;
+      transform: scale(0.98);
+    }
   </style>
 </head>
 <body class="bg-light">
@@ -117,7 +116,22 @@
           <tr>
             <td>{{ $index + 1 }}</td>
             <td>{{ $item->product->product_name }} ({{ $item->product->product_code }})</td>
-            <td>{{ $item->quantity }}</td>
+            <td>
+              <form action="{{ route('cart.update', $item->cart_id) }}" method="POST" class="d-flex align-items-center justify-content-center">
+                @csrf
+                @method('PUT')
+
+                <!-- Tombol minus -->
+                <button type="submit" name="action" value="decrease" class="btn btn-sm btn-secondary me-1">-</button>
+
+                <!-- Input jumlah -->
+                <input type="text" name="quantity" value="{{ $item->quantity }}" 
+                       class="form-control text-center" style="width: 60px;" readonly>
+
+                <!-- Tombol plus -->
+                <button type="submit" name="action" value="increase" class="btn btn-sm btn-secondary ms-1">+</button>
+              </form>
+            </td>
             <td>Rp. {{ number_format($item->product->price * $item->quantity, 0, ',', '.') }}</td>
             <td>
               <form action="{{ route('cart.remove', $item->cart_id) }}" method="POST" style="display:inline;">
@@ -139,8 +153,6 @@
       Total belanja (termasuk pajak):
       <span class="highlight">Rp. {{ number_format($total, 0, ',', '.') }}</span>
     </div>
-
-    
 
     <!-- Tombol aksi -->
     <div style="margin-top: 20px; text-align: right;">

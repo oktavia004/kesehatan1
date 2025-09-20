@@ -89,6 +89,23 @@ class CartController extends Controller
             ->with('success', 'Produk berhasil ditambahkan ke keranjang.');
     }
 
+     public function update(Request $request, $id)
+    {
+        $cart = Cart::findOrFail($id);
+
+        if ($request->action === 'increase') {
+            $cart->quantity += 1;
+        } elseif ($request->action === 'decrease' && $cart->quantity > 1) {
+            $cart->quantity -= 1;
+        } else {
+            return back()->with('error', 'Jumlah minimal 1');
+        }
+
+        $cart->save();
+
+        return back()->with('success', 'Jumlah produk diperbarui');
+    }
+
     
     /**
      * Hapus produk dari keranjang
