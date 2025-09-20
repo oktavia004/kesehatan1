@@ -90,21 +90,55 @@ class CartController extends Controller
     }
 
      public function update(Request $request, $id)
-    {
-        $cart = Cart::findOrFail($id);
+{
+    $cart = Cart::with('product')->findOrFail($id);
 
-        if ($request->action === 'increase') {
-            $cart->quantity += 1;
-        } elseif ($request->action === 'decrease' && $cart->quantity > 1) {
-            $cart->quantity -= 1;
-        } else {
-            return back()->with('error', 'Jumlah minimal 1');
+    if ($request->action === 'increase') {
+        // ✅ Cek stok produk
+        if ($cart->quantity + 1 > $cart->product->stock) {
+            return $request->ajax()
+                ? response()->json([
+                    'success' => false,
+                    'message' => "Stok produk hanya {$cart->product->stock}, tidak bisa menambah lagi."
+                ], 400)
+                : back()->with('error', "Stok produk hanya {$cart->product->stock}");
         }
 
-        $cart->save();
-
-        return back()->with('success', 'Jumlah produk diperbarui');
+        $cart->quantity += 1;
+    } elseif ($request->action === 'decrease') {
+        if ($cart->quantity > 1) {
+            $cart->quantity -= 1;
+        } else {
+            return $request->ajax()
+                ? response()->json([
+                    'success' => false,
+                    'message' => "Jumlah minimal 1"
+                ], 400)
+                : back()->with('error', "Jumlah minimal 1");
+        }
     }
+
+    $cart->save();
+
+    // ✅ Hitung subtotal item & total keranjang
+    $subtotal = $cart->product->price * $cart->quantity;
+    $total = Cart::with('product')
+        ->where('user_id', Session::get('user_id'))
+        ->get()
+        ->sum(fn($item) => $item->product->price * $item->quantity);
+
+    if ($request->ajax()) {
+        return response()->json([
+            'success'  => true,
+            'message'  => 'Jumlah produk diperbarui',
+            'newQty'   => $cart->quantity,
+            'subtotal' => number_format($subtotal, 0, ',', '.'),
+            'total'    => number_format($total, 0, ',', '.')
+        ]);
+    }
+
+    return back()->with('success', 'Jumlah produk diperbarui');
+}
 
     
     /**

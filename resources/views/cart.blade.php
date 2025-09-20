@@ -53,24 +53,6 @@
     .highlight {
       color: #d9534f;
     }
-    .btn {
-      display: inline-block;
-      padding: 6px 12px;
-      margin: 2px;
-      font-size: 12px;
-      cursor: pointer;
-      border-radius: 4px;
-      text-decoration: none;
-      border: none;
-    }
-    .btn-danger {
-      background-color: #dc3545;
-      color: #fff;
-    }
-    .btn-primary {
-      background-color: #0d6efd;
-      color: #fff;
-    }
     .btn-cancel {
       background-color: #ff7f32;
       color: #fff;
@@ -113,28 +95,29 @@
       </thead>
       <tbody>
         @forelse($cartItems as $index => $item)
-          <tr>
+          <tr id="row-{{ $item->cart_id }}">
             <td>{{ $index + 1 }}</td>
             <td>{{ $item->product->product_name }} ({{ $item->product->product_code }})</td>
             <td>
-              <form action="{{ route('cart.update', $item->cart_id) }}" method="POST" class="d-flex align-items-center justify-content-center">
-                @csrf
-                @method('PUT')
-
+              <div class="d-flex align-items-center justify-content-center">
                 <!-- Tombol minus -->
-                <button type="submit" name="action" value="decrease" class="btn btn-sm btn-secondary me-1">-</button>
+                <button data-id="{{ $item->cart_id }}" data-action="decrease" class="btn btn-sm btn-secondary me-1 update-cart">-</button>
 
                 <!-- Input jumlah -->
-                <input type="text" name="quantity" value="{{ $item->quantity }}" 
-                       class="form-control text-center" style="width: 60px;" readonly>
+                <input type="text" id="qty-{{ $item->cart_id }}" 
+                       value="{{ $item->quantity }}" 
+                       class="form-control text-center" 
+                       style="width: 60px;" readonly>
 
                 <!-- Tombol plus -->
-                <button type="submit" name="action" value="increase" class="btn btn-sm btn-secondary ms-1">+</button>
-              </form>
+                <button data-id="{{ $item->cart_id }}" data-action="increase" class="btn btn-sm btn-secondary ms-1 update-cart">+</button>
+              </div>
             </td>
-            <td>Rp. {{ number_format($item->product->price * $item->quantity, 0, ',', '.') }}</td>
             <td>
-              <form action="{{ route('cart.remove', $item->cart_id) }}" method="POST" style="display:inline;">
+              Rp. <span id="price-{{ $item->cart_id }}">{{ number_format($item->product->price * $item->quantity, 0, ',', '.') }}</span>
+            </td>
+            <td>
+              <form action="{{ route('cart.remove', $item->cart_id) }}" method="POST" class="delete-form" data-id="{{ $item->cart_id }}">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn btn-danger">Hapus</button>
@@ -150,8 +133,8 @@
     </table>
 
     <div class="total">
-      Total belanja (termasuk pajak):
-      <span class="highlight">Rp. {{ number_format($total, 0, ',', '.') }}</span>
+      Total belanja (termasuk pajak): 
+      <span class="highlight" id="cart-total">Rp. {{ number_format($total, 0, ',', '.') }}</span>
     </div>
 
     <!-- Tombol aksi -->
@@ -164,5 +147,69 @@
 @endsection
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function(){
+
+  // ✅ Update jumlah dengan AJAX
+  $(".update-cart").click(function(e){
+    e.preventDefault();
+    let id = $(this).data("id");
+    let action = $(this).data("action");
+
+    $.ajax({
+      url: "/cart/update/" + id,
+      type: "PUT",
+      data: {
+        _token: "{{ csrf_token() }}",
+        action: action
+      },
+      success: function(res){
+        if(res.success){
+          $("#qty-"+id).val(res.newQty);
+          $("#price-"+id).text(res.subtotal);
+          $("#cart-total").text("Rp. " + res.total);
+        }
+        Swal.fire({
+          icon: 'success',
+          title: 'Berhasil',
+          text: res.message,
+          timer: 1500,
+          showConfirmButton: false
+        });
+      },
+      error: function(xhr){
+        let err = xhr.responseJSON;
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: err.message
+        });
+      }
+    });
+  });
+
+  // ✅ Hapus produk dengan konfirmasi
+  $(".delete-form").submit(function(e){
+    e.preventDefault();
+    let form = this;
+    let id = $(this).data("id");
+
+    Swal.fire({
+      title: "Yakin hapus produk?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Ya, hapus",
+      cancelButtonText: "Batal"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        form.submit();
+      }
+    });
+  });
+
+});
+</script>
 </body>
 </html>
