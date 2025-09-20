@@ -89,6 +89,7 @@ class CartController extends Controller
             ->with('success', 'Produk berhasil ditambahkan ke keranjang.');
     }
 
+    
     /**
      * Hapus produk dari keranjang
      */

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Laporan Belanja #{{ $order->order_id }}</title>
     <style>
         body { 
-            font-family: DejaVu Sans, sans-serif; 
+            font-family: DejaVu Sans, sans-serif;
             font-size: 12px; 
             margin: 20px; /* beri jarak dari tepi PDF */
             padding: 0;

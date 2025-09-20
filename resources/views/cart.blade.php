@@ -140,6 +140,8 @@
       <span class="highlight">Rp. {{ number_format($total, 0, ',', '.') }}</span>
     </div>
 
+    
+
     <!-- Tombol aksi -->
     <div style="margin-top: 20px; text-align: right;">
       <a href="{{ route('dashboard') }}" class="btn btn-cancel">Cancel</a>

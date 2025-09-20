@@ -57,26 +57,28 @@ class OrderController extends Controller
     }
 
     // Tampilkan invoice
-    public function showInvoice($orderId)
-    {
-        $order = Order::with('items.product', 'user')->findOrFail($orderId);
-        return view('invoice', compact('order'));
-    }
+    // 🔹 Untuk tampilkan invoice biasa di browser
+public function showInvoice($orderId)
+{
+    $order = Order::with('items.product', 'user')->findOrFail($orderId);
+    return view('invoice', compact('order'));
+}
 
-    public function downloadPdf($orderId)
+// 🔹 Untuk generate & download PDF + kirim email
+public function downloadPdf($orderId)
 {
     $order = Order::with('items.product', 'user')->findOrFail($orderId);
 
-    // Render dari pdf.blade.php
-    $pdf = Pdf::loadView('pdf', compact('order'));
+   $pdf = Pdf::loadView('pdf', compact('order'))->setOptions([
+    'defaultFont' => 'DejaVu Sans',
+]);
 
-    // Kirim email dengan attachment PDF
+    // Kirim email dengan lampiran PDF
     Mail::to($order->user->email)->send(new InvoiceMail($pdf, $order));
 
     // Download file PDF
     return $pdf->download('invoice_'.$order->id.'.pdf');
-
-    
 }
+
 
 }
